@@ -40,7 +40,7 @@ bool writeValue(QDataStream &output, quint16 Offest, QByteArray value, int len)
 }
 
 
-bool param(const QString &path, QByteArray keyname, QByteArray value)
+bool param(QString path, QByteArray keyname, QByteArray value)
 {
 	quint32 magic, version, key_table_start, new_key_table_start, data_table_start,
 		new_data_table_start, tables_entries, new_tables_entries, data_len, data_max_len, data_offset, new_data_offset;
@@ -57,7 +57,6 @@ bool param(const QString &path, QByteArray keyname, QByteArray value)
 	in.setByteOrder(QDataStream::LittleEndian);
 	out.setByteOrder(QDataStream::LittleEndian);
 	in >> key_table_start >> data_table_start >> tables_entries;
-
 	new_key_table_start = key_table_start + 0x10;
 	new_data_table_start = new_key_table_start + readValue(in, key_table_start,
 		data_table_start - key_table_start).replace('\0', ' ').trimmed().length() + 1 + keyname.length() + 1;
