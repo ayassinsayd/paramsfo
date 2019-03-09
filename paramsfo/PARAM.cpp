@@ -39,10 +39,6 @@ bool PARAM::writeData(QDataStream &out, quint16 Offest, QByteArray data, int len
 
 bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_len)
 {
-	quint32 magic, version, sfo_key_table_start, buf_key_table_start, sfo_data_table_start, buf_data_table_start, sfo_tables_entries
-		, buf_tables_entries, buf_data_len, buf_data_max_len, sfo_data_offset, new_data_offset;
-	quint16 sfo_key_offset, new_key_offset, buf_data_fmt;
-	
 	QFile sfo(path);
 	sfo.open(QFile::ReadWrite);
 	QDataStream in(&sfo);
@@ -82,7 +78,11 @@ bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_
 			buf_data = readData(in, sfo_data_table_start + sfo_data_offset, buf_data_max_len);
 		}
 		if ((i > sfo_tables_entries) || (buf_key.contains(key) && !data.isEmpty())) {
-			buf_key = key; buf_data = data; buf_data_fmt = fmt; buf_data_len = data.length(); buf_data_max_len = max_len;
+			buf_key = key;
+			buf_data = data;
+			buf_data_fmt = fmt;
+			buf_data_len = data.length();
+			buf_data_max_len = max_len;
 		}
 		out << buf_key_offset << buf_data_fmt << buf_data_len << buf_data_max_len << buf_data_offset;
 		writeData(out, buf_key_table_start + buf_key_offset, buf_key, buf_key.length());
