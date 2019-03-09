@@ -61,7 +61,7 @@ bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_
 	}
 	else if (keys.contains(key) && data.isEmpty()) {
 		buf_key_table_start -= 0x10;
-		buf_data_table_start -= keys.length() + 1 + key.length() + 1;
+		buf_data_table_start -= keys.length() - 1 - key.length() - 1;
 		buf_tables_entries -= 1;
 	}
 	if (buf_data_table_start % 4 != 0)
