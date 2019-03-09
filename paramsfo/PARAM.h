@@ -1,5 +1,4 @@
 #pragma once
-//#include <QtCore/QCoreApplication>
 #include <QtCore/qfile.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qbytearray.h>
