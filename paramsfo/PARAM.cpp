@@ -48,12 +48,11 @@ bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_
 		return false;
 	out << magic << version;
 	in.setByteOrder(QDataStream::LittleEndian);
-	out.setByteOrder(QDataStream::LittleEndian);
 	in >> sfo_key_table_start >> sfo_data_table_start >> sfo_tables_entries;
-	QByteArray keys = readData(in, sfo_key_table_start, sfo_data_table_start - sfo_key_table_start).replace('\0', ' ').trimmed();
 	buf_key_table_start = sfo_key_table_start;
 	buf_data_table_start = sfo_data_table_start;
 	buf_tables_entries = sfo_tables_entries;
+	QByteArray keys = readData(in, sfo_key_table_start, sfo_data_table_start - sfo_key_table_start).replace('\0', ' ').trimmed();
 	if (!keys.contains(key) && !data.isEmpty()) {
 		buf_key_table_start += 0x10;
 		buf_data_table_start += keys.length() + 1 + key.length() + 1;
@@ -66,6 +65,7 @@ bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_
 	}
 	if (buf_data_table_start % 4 != 0)
 		buf_data_table_start = (buf_data_table_start / 4 + 1) * 4;
+	out.setByteOrder(QDataStream::LittleEndian);
 	out << buf_key_table_start << buf_data_table_start << buf_tables_entries;
 	quint16 buf_key_offset = 0;
 	quint32 buf_data_offset = 0;
