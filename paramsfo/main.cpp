@@ -1,13 +1,12 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/qdebug.h>
+#include "param.h"
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	param("c:\\a.sfo", "target_app_ver", "00.99");
-	param("c:\\a.sfo", "app_ver", "00.99");
-	param("c:\\a.sfo", "version", "00.99");
-	//getchar();
+	PARAM("c:\\a.sfo").sfoEditor("TITLE_ID", "BLUS12355", 0x402, 16);
+	getchar();
 	//return a.exec();
 }
 

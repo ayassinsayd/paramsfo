@@ -85,8 +85,8 @@ bool PARAM::sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_
 			buf_data_max_len = max_len;
 		}
 		out << buf_key_offset << buf_data_fmt << buf_data_len << buf_data_max_len << buf_data_offset;
-		writeData(out, buf_key_table_start + buf_key_offset, buf_key, buf_key.length());
-		writeData(out, buf_data_table_start + buf_data_offset, buf_data, buf_data.length());
+		writeData(out, buf_key_table_start + buf_key_offset, buf_key.toUpper().data(), buf_key.length() + 1);
+		writeData(out, buf_data_table_start + buf_data_offset, buf_data, buf_data_max_len);
 		buf_key_offset += key.length() + 1;
 		buf_data_offset += buf_data_max_len;
 	}

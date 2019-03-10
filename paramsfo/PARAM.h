@@ -9,6 +9,7 @@ class PARAM
 public:
 	PARAM(QString path);
 	~PARAM();
+	bool sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_len);
 private:
 	QString path;
 	quint32 magic, version, sfo_key_table_start, buf_key_table_start, sfo_data_table_start, buf_data_table_start, sfo_tables_entries
@@ -17,6 +18,5 @@ private:
 	bool isValidParam(QDataStream & in);
 	QByteArray readData(QDataStream & in, quint16 offest, int len);
 	bool writeData(QDataStream & out, quint16 Offest, QByteArray data, int len);
-	bool sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_len);
 };
 
