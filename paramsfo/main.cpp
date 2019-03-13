@@ -1,20 +1,81 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/qdebug.h>
+#include <QtCore/qbytearraylist.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qfile.h>
 #include "param.h"
+#include <QtCore/qlist.h>
+
+typedef struct {
+	uint32_t magic;
+	uint32_t version;
+	uint32_t key_table_start;
+	uint32_t data_table_start;
+	uint32_t tables_entries;
+} header;
+
+typedef struct {
+	uint16_t key_offset;
+	uint16_t data_fmt;
+	uint32_t data_len;
+	uint32_t data_max_len;
+	uint32_t data_offset;
+} index_table;
+
+typedef struct {
+	header header;
+	QList <index_table> index_table;
+	QList <QByteArray> key_table;
+	QList <QByteArray> data_table;
+} sfo;
+
+QDataStream &operator<<(QDataStream &out, const sfo &s) {
+	out << s.header.magic;
+	out << s.header.version; 
+	out << s.header.key_table_start;
+	out << s.header.data_table_start; 
+	out << s.header.tables_entries;
+	//for (int i = 0; i < 2; ++i)
+	//in >> hand_shake_pkt.Reserved1[i];
+	return out;
+}
+
+QDataStream &operator>>(QDataStream &in, sfo &s) {
+	in >> s.header.magic >> s.header.version;
+	in.setByteOrder(QDataStream::LittleEndian);
+	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
+	index_table index_table;
+	for (int i = 0; i < s.header.tables_entries; ++i) {
+		in >> index_table.key_offset >> index_table.data_fmt >> index_table.data_len >> index_table.data_max_len >> index_table.data_offset;
+		s.index_table << index_table;
+	}
+	for (int i = 0; i < s.header.tables_entries; ++i) {
+		QByteArray asd;
+		in >> asd;
+		s.key_table << asd;
+	}
+	return in;
+}
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	PARAM("c:\\a.sfo").sfoEditor("TITLE_ID", "BLUS12355", 0x402, 16);
+	QFile f("c:\\a.sfo");
+	f.open(QIODevice::ReadWrite);
+	sfo sfo;
+	QDataStream in(&f);
+	in >> sfo;
+	
+	qDebug() << sfo.index_table[0].data_fmt;
 	getchar();
-	//return a.exec();
+	
 }
 
 
 
 
-
-
+//return a.exec();
+//PARAM("c:\\a.sfo").sfoEditor("TITLE_ID", "BLES23355", 0x402, 16);
 //bool isValidSignature(quint32 signature)
 //{
 //	return signature == 0x00505346;
