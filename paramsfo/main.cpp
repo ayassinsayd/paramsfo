@@ -24,9 +24,9 @@ typedef struct {
 
 typedef struct {
 	header header;
-	QList <index_table> index_table;
-	QList <QByteArray> key_table;
-	QList <QByteArray> data_table;
+	QVector <index_table> index_table;
+	QVector <QByteArray> key_table;
+	QVector <QByteArray> data_table;
 } sfo;
 
 QDataStream &operator<<(QDataStream &out, const sfo &s) {
@@ -44,16 +44,17 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in >> s.header.magic >> s.header.version;
 	in.setByteOrder(QDataStream::LittleEndian);
 	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
-	index_table index_table;
-	for (int i = 0; i < s.header.tables_entries; ++i) {
-		in >> index_table.key_offset >> index_table.data_fmt >> index_table.data_len >> index_table.data_max_len >> index_table.data_offset;
-		s.index_table << index_table;
-	}
-	for (int i = 0; i < s.header.tables_entries; ++i) {
-		QByteArray asd;
-		in >> asd;
-		s.key_table << asd;
-	}
+	//index_table index_table;
+	in >> s.index_table[0].key_offset;
+	//for (int i = 0; i < s.header.tables_entries; ++i) {
+		//in >> index_table.key_offset >> index_table.data_fmt >> index_table.data_len >> index_table.data_max_len >> index_table.data_offset;
+		//s.index_table << index_table;
+	//}
+	//for (int i = 0; i < s.header.tables_entries; ++i) {
+		//QByteArray asd;
+		//in >> asd;
+		//s.key_table << asd;
+	//}
 	return in;
 }
 
@@ -65,8 +66,8 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream in(&f);
 	in >> sfo;
-	
-	qDebug() << sfo.index_table[0].data_fmt;
+	sfo.index_table;
+	qDebug() << sfo.index_table[0].key_offset;
 	getchar();
 	
 }
