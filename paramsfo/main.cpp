@@ -56,6 +56,12 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		} while (byte != 0);
 		s.key << key;
 	}
+	for (int i = 0; i < s.header.entries; ++i) {
+		QByteArray data(s.index[0].data_max_len, '\0');
+		in.readRawData(data.data(), s.index[0].data_max_len);
+		s.data << data;
+	}
+
 	return in;
 }
 
@@ -67,7 +73,7 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream in(&f);
 	in >> sfo;
-	qDebug() << sfo.key[0];
+	qDebug() << sfo.data[0];
 	getchar();
 }
 
