@@ -1,6 +1,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/qdebug.h>
 #include <QtCore/qbytearray.h>
+#include <QtCore/qbytearraylist.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qfile.h>
 //#include "param.h"
@@ -27,6 +28,7 @@ typedef struct {
 	header header;
 	QVector <index> index;
 	QVector <QByteArray> key;
+	QByteArray Padding;
 	QVector <QByteArray> data;
 } sfo;
 
@@ -56,7 +58,11 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		} while (byte != 0);
 		s.key << key;
 	}
-
+	int size;
+	for (auto key : s.key)
+		size = key.size();
+	if (size % 4 != 0)
+		s.Padding.fill('\0', (size / 4 + 1) * 4);
 	for (int i = 0; i < s.header.entries; ++i) {
 		QByteArray data(s.index[0].data_max_len, '\0');
 		in.readRawData(data.data(), s.index[0].data_max_len);
@@ -73,7 +79,7 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream in(&f);
 	in >> sfo;
-	qDebug() << sfo.data[0];
+	qDebug() << sfo.data[0].length();
 	getchar();
 }
 
