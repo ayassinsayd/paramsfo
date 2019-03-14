@@ -1,17 +1,18 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/qdebug.h>
-#include <QtCore/qbytearraylist.h>
+#include <QtCore/qbytearray.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qfile.h>
-#include "param.h"
+//#include "param.h"
+#include <QtCore/qvector.h>
 #include <QtCore/qlist.h>
 
 typedef struct {
 	uint32_t magic;
 	uint32_t version;
-	uint32_t key_table_start;
-	uint32_t data_table_start;
-	uint32_t tables_entries;
+	uint32_t key_offset;
+	uint32_t data_offset;
+	uint32_t entries;
 } header;
 
 typedef struct {
@@ -20,41 +21,41 @@ typedef struct {
 	uint32_t data_len;
 	uint32_t data_max_len;
 	uint32_t data_offset;
-} index_table;
+} index;
 
 typedef struct {
 	header header;
-	QVector <index_table> index_table;
-	QVector <QByteArray> key_table;
-	QVector <QByteArray> data_table;
+	QVector <index> index;
+	QVector <QByteArray> key;
+	QVector <QByteArray> data;
 } sfo;
 
-QDataStream &operator<<(QDataStream &out, const sfo &s) {
-	out << s.header.magic;
-	out << s.header.version; 
-	out << s.header.key_table_start;
-	out << s.header.data_table_start; 
-	out << s.header.tables_entries;
+//QDataStream &operator<<(QDataStream &out, const sfo &s) {
+//	out << s.header.magic;
+//	out << s.header.version; 
+//	out << s.header.key_start;
+//	out << s.header.data_start; 
+//	out << s.header.entries;
 	//for (int i = 0; i < 2; ++i)
 	//in >> hand_shake_pkt.Reserved1[i];
-	return out;
-}
+//	return out;
+//}
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in >> s.header.magic >> s.header.version;
 	in.setByteOrder(QDataStream::LittleEndian);
-	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
-	//index_table index_table;
-	in >> s.index_table[0].key_offset;
-	//for (int i = 0; i < s.header.tables_entries; ++i) {
-		//in >> index_table.key_offset >> index_table.data_fmt >> index_table.data_len >> index_table.data_max_len >> index_table.data_offset;
-		//s.index_table << index_table;
-	//}
-	//for (int i = 0; i < s.header.tables_entries; ++i) {
-		//QByteArray asd;
-		//in >> asd;
-		//s.key_table << asd;
-	//}
+	in >> s.header.key_offset >> s.header.data_offset >> s.header.entries;
+	for (int i = 0; i < s.header.entries; ++i)
+		in >> s.index[i].key_offset >> s.index[i].data_fmt >> s.index[i].data_len >> s.index[i].data_max_len >> s.index[i].data_offset;
+	quint8 byte;
+	QByteArray key;
+	for (int i = 0; i < s.header.entries; ++i) {
+		do {
+			in >> byte;
+			key.append(byte);
+		} while (byte != 0);
+		s.key << key;
+	}
 	return in;
 }
 
@@ -66,10 +67,8 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream in(&f);
 	in >> sfo;
-	sfo.index_table;
-	qDebug() << sfo.index_table[0].key_offset;
+	qDebug() << sfo.key[0];
 	getchar();
-	
 }
 
 
