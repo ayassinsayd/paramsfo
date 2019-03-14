@@ -61,7 +61,6 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		in.readRawData(data.data(), s.index[0].data_max_len);
 		s.data << data;
 	}
-
 	return in;
 }
 
