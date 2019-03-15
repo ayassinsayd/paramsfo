@@ -11,9 +11,9 @@
 typedef struct {
 	uint32_t magic;
 	uint32_t version;
-	uint32_t key_offset;
-	uint32_t data_offset;
-	uint32_t entries;
+	uint32_t key_table_start;
+	uint32_t data_table_start;
+	uint32_t tables_entries;
 } header;
 
 typedef struct {
@@ -22,51 +22,44 @@ typedef struct {
 	uint32_t data_len;
 	uint32_t data_max_len;
 	uint32_t data_offset;
-} index;
+} index_table;
 
 typedef struct {
 	header header;
-	QVector <index> index;
-	QVector <QByteArray> key;
-	QByteArray Padding;
-	QVector <QByteArray> data;
+	QVector <index_table> index_table;
+	QVector <QByteArray> key_table;
+	QVector <QByteArray> data_table;
 } sfo;
 
-//QDataStream &operator<<(QDataStream &out, const sfo &s) {
-//	out << s.header.magic;
-//	out << s.header.version; 
-//	out << s.header.key_start;
-//	out << s.header.data_start; 
-//	out << s.header.entries;
-	//for (int i = 0; i < 2; ++i)
-	//in >> hand_shake_pkt.Reserved1[i];
-//	return out;
-//}
+QDataStream &operator<<(QDataStream &out, const sfo &s) {
+
+	return out;
+}
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in >> s.header.magic >> s.header.version;
 	in.setByteOrder(QDataStream::LittleEndian);
-	in >> s.header.key_offset >> s.header.data_offset >> s.header.entries;
-	for (int i = 0; i < s.header.entries; ++i)
-		in >> s.index[i].key_offset >> s.index[i].data_fmt >> s.index[i].data_len >> s.index[i].data_max_len >> s.index[i].data_offset;
+	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len >> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
 	quint8 byte;
 	QByteArray key;
-	for (int i = 0; i < s.header.entries; ++i) {
+	for (int i = 0; i < s.header.tables_entries; ++i) {
 		do {
 			in >> byte;
 			key.append(byte);
 		} while (byte != 0);
-		s.key << key;
+		s.key_table << key;
 	}
 	int size;
-	for (auto key : s.key)
+	for (auto key : s.key_table)
 		size = key.size();
 	if (size % 4 != 0)
-		s.Padding.fill('\0', (size / 4 + 1) * 4);
-	for (int i = 0; i < s.header.entries; ++i) {
-		QByteArray data(s.index[0].data_max_len, '\0');
-		in.readRawData(data.data(), s.index[0].data_max_len);
-		s.data << data;
+		in.skipRawData(size / 4 + 1);
+	for (int i = 0; i < s.header.tables_entries; ++i) {
+		QByteArray data(s.index_table[0].data_max_len, '\0');
+		in.readRawData(data.data(), s.index_table[0].data_max_len);
+		s.data_table << data;
 	}
 	return in;
 }
@@ -79,7 +72,7 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream in(&f);
 	in >> sfo;
-	qDebug() << sfo.data[0].length();
+	qDebug() << sfo.data[0];
 	getchar();
 }
 
