@@ -32,13 +32,26 @@ typedef struct {
 } sfo;
 
 QDataStream &operator<<(QDataStream &out, const sfo &s) {
-
+	out.setByteOrder(QDataStream::LittleEndian);
+	out << s.header.magic << s.header.version;
+	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len << s.index_table[i].data_max_len << s.index_table[i].data_offset;
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out.writeRawData(s.key_table[i].data(), s.key_table[i].length() + 1);
+	int padding;
+	for (auto key : s.key_table)
+		padding = key.length() + 1;
+	if (padding % 4 != 0)
+		out.writeRawData("\0", padding / 4 + 1);
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
 	return out;
 }
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
-	in >> s.header.magic >> s.header.version;
 	in.setByteOrder(QDataStream::LittleEndian);
+	in >> s.header.magic >> s.header.version;
 	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len >> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
@@ -51,11 +64,11 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		} while (byte != 0);
 		s.key_table << key;
 	}
-	int size;
+	int padding;
 	for (auto key : s.key_table)
-		size = key.size();
-	if (size % 4 != 0)
-		in.skipRawData(size / 4 + 1);
+		padding = key.size();
+	if (padding % 4 != 0)
+		in.skipRawData(padding / 4 + 1);
 	for (int i = 0; i < s.header.tables_entries; ++i) {
 		QByteArray data(s.index_table[0].data_max_len, '\0');
 		in.readRawData(data.data(), s.index_table[0].data_max_len);
@@ -70,9 +83,12 @@ int main(int argc, char *argv[])
 	QFile f("c:\\a.sfo");
 	f.open(QIODevice::ReadWrite);
 	sfo sfo;
-	QDataStream in(&f);
-	in >> sfo;
-	qDebug() << sfo.data[0];
+	QDataStream ds(&f);
+	ds >> sfo;
+	sfo.key_table[0] = "ahmedahm";
+	f.resize(0);
+	ds << sfo;
+	//qDebug() << sfo.;
 	getchar();
 }
 
