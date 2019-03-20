@@ -1,27 +1,24 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/qdebug.h>
 #include <QtCore/qbytearray.h>
-#include <QtCore/qbytearraylist.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qfile.h>
-//#include "param.h"
 #include <QtCore/qvector.h>
-#include <QtCore/qlist.h>
 
 typedef struct {
-	uint32_t magic;
-	uint32_t version;
-	uint32_t key_table_start;
-	uint32_t data_table_start;
-	uint32_t tables_entries;
+	quint32 magic;
+	quint32 version;
+	quint32 key_table_start;
+	quint32 data_table_start;
+	quint32 tables_entries;
 } header;
 
 typedef struct {
-	uint16_t key_offset;
-	uint16_t data_fmt;
-	uint32_t data_len;
-	uint32_t data_max_len;
-	uint32_t data_offset;
+	quint16 key_offset;
+	quint16 data_fmt;
+	quint32 data_len;
+	quint32 data_max_len;
+	quint32 data_offset;
 } index_table;
 
 typedef struct {
@@ -31,19 +28,24 @@ typedef struct {
 	QVector <QByteArray> data_table;
 } sfo;
 
-QDataStream &operator<<(QDataStream &out, const sfo &s) {
+QDataStream &operator<<(QDataStream &out, sfo &s) {
 	out.setByteOrder(QDataStream::LittleEndian);
 	out << s.header.magic << s.header.version;
+	s.header.key_table_start = 0x14 + s.index_table.count() * 0x10;
+	s.header.data_table_start = s.header.key_table_start;
+	for (auto key : s.key_table)
+		s.header.data_table_start += key.length() + 1;
+	if (s.header.data_table_start % 4 != 0)
+		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
+	s.header.tables_entries = s.index_table.count();
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	qDebug() << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
-		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len << s.index_table[i].data_max_len << s.index_table[i].data_offset;
+		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
+		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out.writeRawData(s.key_table[i].data(), s.key_table[i].length() + 1);
-	int padding;
-	for (auto key : s.key_table)
-		padding = key.length() + 1;
-	if (padding % 4 != 0)
-		out.writeRawData("\0", padding / 4 + 1);
+	out.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
 	return out;
@@ -54,7 +56,8 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in >> s.header.magic >> s.header.version;
 	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
-		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len >> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
+		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len
+		>> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
 	quint8 byte;
 	QByteArray key;
 	for (int i = 0; i < s.header.tables_entries; ++i) {
@@ -64,14 +67,10 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		} while (byte != 0);
 		s.key_table << key;
 	}
-	int padding;
-	for (auto key : s.key_table)
-		padding = key.size();
-	if (padding % 4 != 0)
-		in.skipRawData(padding / 4 + 1);
+	in.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i) {
-		QByteArray data(s.index_table[0].data_max_len, '\0');
-		in.readRawData(data.data(), s.index_table[0].data_max_len);
+		QByteArray data(s.index_table[i].data_max_len, '\0');
+		in.readRawData(data.data(), s.index_table[i].data_max_len);
 		s.data_table << data;
 	}
 	return in;
@@ -80,15 +79,16 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	QFile f("c:\\a.sfo");
+	QFile f("c:\\q.sfo");
 	f.open(QIODevice::ReadWrite);
 	sfo sfo;
 	QDataStream ds(&f);
 	ds >> sfo;
+	qDebug() << sfo.key_table[0];
 	sfo.key_table[0] = "ahmedahm";
 	f.resize(0);
 	ds << sfo;
-	//qDebug() << sfo.;
+	f.close();
 	getchar();
 }
 
