@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream ds(&f);
 	ds >> sfo;
-	//qDebug() << sfo.key_table[0];
+	qDebug() << sfo.key_table[0];
 	//sfo.key_table[0] = "ahmedahm";
 	//f.resize(0);
 	//ds << sfo;
