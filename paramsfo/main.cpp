@@ -29,9 +29,10 @@ typedef struct {
 } sfo;
 
 QDataStream &operator<<(QDataStream &out, sfo &s) {
-	out.setByteOrder(QDataStream::LittleEndian);
+	out.setByteOrder(QDataStream::BigEndian);
 	out << s.header.magic << s.header.version;
 	s.header.key_table_start = 0x14 + s.index_table.count() * 0x10;
+	out.setByteOrder(QDataStream::LittleEndian);
 	s.header.data_table_start = s.header.key_table_start;
 	for (auto key : s.key_table)
 		s.header.data_table_start += key.length() + 1;
@@ -39,7 +40,7 @@ QDataStream &operator<<(QDataStream &out, sfo &s) {
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	s.header.tables_entries = s.index_table.count();
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-	qDebug() << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	qDebug() <<"write" <<s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
@@ -52,8 +53,9 @@ QDataStream &operator<<(QDataStream &out, sfo &s) {
 }
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
-	in.setByteOrder(QDataStream::LittleEndian);
+	in.setByteOrder(QDataStream::BigEndian);
 	in >> s.header.magic >> s.header.version;
+	in.setByteOrder(QDataStream::LittleEndian);
 	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len
@@ -84,12 +86,13 @@ int main(int argc, char *argv[])
 	sfo sfo;
 	QDataStream ds(&f);
 	ds >> sfo;
-	qDebug() << sfo.key_table[0];
-	sfo.key_table[0] = "ahmedahm";
-	f.resize(0);
-	ds << sfo;
+	//qDebug() << sfo.key_table[0];
+	//sfo.key_table[0] = "ahmedahm";
+	//f.resize(0);
+	//ds << sfo;
 	f.close();
-	getchar();
+	//getchar();
+	//return a.exec();
 }
 
 
