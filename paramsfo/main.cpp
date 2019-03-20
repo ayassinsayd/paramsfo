@@ -58,24 +58,19 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in.setByteOrder(QDataStream::LittleEndian);
 	in >> s.header.key_table_start >> s.header.data_table_start >> s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
-	{
-		qDebug() << i << s.header.tables_entries;
-		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len
-			>> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
-	}
-	quint8 byte;
-	QByteArray key;
+		in >> s.index_table[i].key_offset >> s.index_table[i].data_fmt >> s.index_table[i].data_len >> s.index_table[i].data_max_len >> s.index_table[i].data_offset;
 	for (int i = 0; i < s.header.tables_entries; ++i) {
-		qDebug() << i << s.header.tables_entries;
+		quint8 byte;
+		QByteArray key;
 		do {
 			in >> byte;
 			key.append(byte);
 		} while (byte != 0);
+		qDebug() << key << ""<< i;
 		s.key_table << key;
 	}
 	in.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i) {
-		qDebug() << i << s.header.tables_entries;
 		QByteArray data(s.index_table[i].data_max_len, '\0');
 		in.readRawData(data.data(), s.index_table[i].data_max_len);
 		s.data_table << data;
