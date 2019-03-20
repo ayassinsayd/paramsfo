@@ -76,7 +76,6 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i) {
 		qDebug() << i << s.header.tables_entries;
-
 		QByteArray data(s.index_table[i].data_max_len, '\0');
 		in.readRawData(data.data(), s.index_table[i].data_max_len);
 		s.data_table << data;
