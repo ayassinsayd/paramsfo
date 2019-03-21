@@ -28,29 +28,29 @@ typedef struct {
 	QVector <QByteArray> data_table;
 } sfo;
 
-//QDataStream &operator<<(QDataStream &out, sfo &s) {
-//	out.setByteOrder(QDataStream::BigEndian);
-//	out << s.header.magic << s.header.version;
-//	s.header.key_table_start = 0x14 + s.index_table.count() * 0x10;
-//	out.setByteOrder(QDataStream::LittleEndian);
-//	s.header.data_table_start = s.header.key_table_start;
-//	for (auto key : s.key_table)
-//		s.header.data_table_start += key.length() + 1;
-//	if (s.header.data_table_start % 4 != 0)
-//		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
-//	s.header.tables_entries = s.index_table.count();
-//	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-//	qDebug() <<"write" <<s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-//	for (int i = 0; i < s.header.tables_entries; ++i)
-//		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
-//		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
-//	for (int i = 0; i < s.header.tables_entries; ++i)
-//		out.writeRawData(s.key_table[i].data(), s.key_table[i].length() + 1);
-//	out.device()->seek(s.header.data_table_start);
-//	for (int i = 0; i < s.header.tables_entries; ++i)
-//		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
-//	return out;
-//}
+QDataStream &operator<<(QDataStream &out, sfo &s) {
+	out.setByteOrder(QDataStream::BigEndian);
+	out << s.header.magic << s.header.version;
+	out.setByteOrder(QDataStream::LittleEndian);
+	s.header.key_table_start = 0x14 + s.index_table.count() * 0x10;
+	s.header.data_table_start = s.header.key_table_start;
+	s.header.tables_entries = s.index_table.count();
+	for (auto key : s.key_table)
+		s.header.data_table_start += key.length();
+	if (s.header.data_table_start % 4 != 0)
+		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
+	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	qDebug() <<"write" <<s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
+		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out.writeRawData(s.key_table[i].data(), s.key_table[i].length());
+	out.device()->seek(s.header.data_table_start);
+	for (int i = 0; i < s.header.tables_entries; ++i)
+		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
+	return out;
+}
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
 	in.setByteOrder(QDataStream::BigEndian);
@@ -89,9 +89,8 @@ int main(int argc, char *argv[])
 	ds >> sfo;
 	for(auto s: sfo.key_table)
 		qDebug() << s;
-	//sfo.key_table[0] = "ahmedahm";
-	//f.resize(0);
-	//ds << sfo;
+	f.resize(0);
+	ds << sfo;
 	f.close();
 	getchar();
 	//return a.exec();
