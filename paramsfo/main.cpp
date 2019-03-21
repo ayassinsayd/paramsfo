@@ -29,6 +29,7 @@ typedef struct {
 } sfo;
 
 QDataStream &operator<<(QDataStream &out, sfo &s) {
+	out.device()->reset();
 	out.setByteOrder(QDataStream::BigEndian);
 	out << s.header.magic << s.header.version;
 	out.setByteOrder(QDataStream::LittleEndian);
@@ -53,6 +54,7 @@ QDataStream &operator<<(QDataStream &out, sfo &s) {
 }
 
 QDataStream &operator>>(QDataStream &in, sfo &s) {
+	in.device()->reset();
 	in.setByteOrder(QDataStream::BigEndian);
 	in >> s.header.magic >> s.header.version;
 	in.setByteOrder(QDataStream::LittleEndian);
