@@ -41,7 +41,6 @@ QDataStream &operator<<(QDataStream &out, sfo &s) {
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-	qDebug() <<"write" <<s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
