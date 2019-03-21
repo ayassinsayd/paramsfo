@@ -92,8 +92,8 @@ int main(int argc, char *argv[])
 		qDebug() << s;
 	for (auto s : sfo.data_table)
 		qDebug() << s;
-	//f.resize(0);
-	//ds << sfo;
+	f.resize(0);
+	ds << sfo;
 	f.close();
 	getchar();
 	//return a.exec();
