@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
 	ds >> sfo;
 	for(auto s: sfo.key_table)
 		qDebug() << s;
+	for (auto s : sfo.data_table)
+		qDebug() << s;
 	//f.resize(0);
 	//ds << sfo;
 	f.close();
