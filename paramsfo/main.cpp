@@ -41,7 +41,6 @@ QDataStream &operator<<(QDataStream &out, sfo &s) {
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-	qDebug() <<"write" <<s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
@@ -69,7 +68,7 @@ QDataStream &operator>>(QDataStream &in, sfo &s) {
 		do {
 			in >> byte;
 			key.append(byte);
-		} while (byte != 0);
+		} while (byte);
 		s.key_table << key;
 	}
 	in.device()->seek(s.header.data_table_start);
@@ -91,8 +90,8 @@ int main(int argc, char *argv[])
 	ds >> sfo;
 	for(auto s: sfo.key_table)
 		qDebug() << s;
-	f.resize(0);
-	ds << sfo;
+	//f.resize(0);
+	//ds << sfo;
 	f.close();
 	getchar();
 	//return a.exec();
