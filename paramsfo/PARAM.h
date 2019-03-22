@@ -1,22 +1,39 @@
-//#pragma once
-//#include <QtCore/qfile.h>
-//#include <QtCore/qdatastream.h>
-//#include <QtCore/qbytearray.h>
-//#include <QtCore/qdebug.h>
-//
-//class PARAM
-//{
-//public:
-//	PARAM(QString path);
-//	~PARAM();
-//	bool sfoEditor(QByteArray key, QByteArray data, quint16 fmt, quint32 max_len);
-//private:
-//	QString path;
-//	quint32 magic, version, sfo_key_table_start, buf_key_table_start, sfo_data_table_start, buf_data_table_start, sfo_tables_entries
-//		, buf_tables_entries, buf_data_len, buf_data_max_len, sfo_data_offset, new_data_offset;
-//	quint16 sfo_key_offset, new_key_offset, buf_data_fmt;
-//	bool isValidParam(QDataStream & in);
-//	QByteArray readData(QDataStream & in, quint16 offest, int len);
-//	bool writeData(QDataStream & out, quint16 Offest, QByteArray data, int len);
-//};
-//
+#pragma once
+#include <QtCore/qvector.h>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qdebug.h>
+
+
+class PARAM
+{
+public:
+	PARAM(QString path);
+	~PARAM();
+	bool isValidParam(QDataStream & in);
+	struct SFO {
+		friend QDataStream &operator>>(QDataStream &in, SFO &s);
+		friend QDataStream &operator<<(QDataStream &out, SFO &s);
+		struct header {
+			quint32 magic;
+			quint32 version;
+			quint32 key_table_start;
+			quint32 data_table_start;
+			quint32 tables_entries;
+		} header;
+		struct index_table {
+			quint16 key_offset;
+			quint16 data_fmt;
+			quint32 data_len;
+			quint32 data_max_len;
+			quint32 data_offset;
+		};
+		QVector <index_table> index_table;
+		QVector <QByteArray> key_table;
+		QVector <QByteArray> data_table;
+	} sfo;
+private:
+	QFile f;
+};
+
