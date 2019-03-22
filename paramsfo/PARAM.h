@@ -16,8 +16,8 @@ public:
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
 		friend QDataStream &operator<<(QDataStream &out, SFO &s);
 		struct header {
-			quint32 magic;
-			quint32 version;
+			quint32 magic = 0x00505346;
+			quint32 version = 0x01010000;
 			quint32 key_table_start;
 			quint32 data_table_start;
 			quint32 tables_entries;
