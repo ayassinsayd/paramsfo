@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	PARAM("c:\\x.sfo");
+	PARAM("c:\\x.sfo").remove("title");
 	getchar();
-	return a.exec();
+	//return a.exec();
 }

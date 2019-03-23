@@ -12,6 +12,7 @@ public:
 	PARAM(QString path);
 	~PARAM();
 	bool isValidParam(QDataStream & in);
+	bool remove(const QByteArray & key);
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
 		friend QDataStream &operator<<(QDataStream &out, SFO &s);

@@ -4,16 +4,15 @@
 PARAM::PARAM(QString path) {
 	f.setFileName(path);
 	f.open(QIODevice::ReadWrite);
-	QDataStream ds(&f);
-	ds >> sfo;
-	for (auto s : sfo.key_table)
-		qDebug() << s;
-	for (auto s : sfo.data_table)
-		qDebug() << s;
+	QDataStream in(&f);
+	in >> sfo;
 }
 
 
 PARAM::~PARAM() {
+	f.resize(0);
+	QDataStream out(&f);
+	out << sfo;
 	f.close();
 }
 
@@ -24,6 +23,21 @@ bool PARAM::isValidParam(QDataStream & in) {
 	quint32 signature, version;
 	in >> signature >> version;
 	return ((signature == 0x00505346) && (version == 0x01010000));
+}
+
+bool PARAM::remove(const QByteArray &key) {
+	QByteArray a = key;
+	a.append('\0');
+	int i = sfo.key_table.indexOf(a.toUpper());
+	qDebug() << i;
+	if (i == -1)
+		return false;
+	qDebug() << "f";
+	sfo.header.tables_entries -= 1;
+	sfo.index_table.remove(i);
+	sfo.key_table.remove(i);
+	sfo.data_table.remove(i);
+	return true;
 }
 
 
