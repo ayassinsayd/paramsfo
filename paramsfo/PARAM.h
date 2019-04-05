@@ -12,6 +12,7 @@ public:
 	PARAM(QString path);
 	~PARAM();
 	bool isValidParam(QDataStream & in);
+	bool insert(const QByteArray & key, const QByteArray & data, quint32 data_max_len);
 	bool remove(const QByteArray & key);
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
