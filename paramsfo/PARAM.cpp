@@ -5,14 +5,14 @@ PARAM::PARAM(QString path) {
 	f.setFileName(path);
 	f.open(QIODevice::ReadWrite);
 	QDataStream in(&f);
-	in >> sfo;
+	in >> s;
 }
 
 
 PARAM::~PARAM() {
 	f.resize(0);
 	QDataStream out(&f);
-	out << sfo;
+	out << s;
 	f.close();
 }
 
@@ -25,18 +25,15 @@ bool PARAM::isValidParam(QDataStream & in) {
 	return ((signature == 0x00505346) && (version == 0x01010000));
 }
 
+
 bool PARAM::remove(const QByteArray &key) {
-	QByteArray a = key;
-	a.append('\0');
-	int i = sfo.key_table.indexOf(a.toUpper());
-	qDebug() << i;
-	if (i == -1)
+	int i = s.key_table.indexOf(key.toUpper());
+	if (i < 0)
 		return false;
-	qDebug() << "f";
-	sfo.header.tables_entries -= 1;
-	sfo.index_table.remove(i);
-	sfo.key_table.remove(i);
-	sfo.data_table.remove(i);
+	s.header.tables_entries -= 1;
+	s.index_table.remove(i);
+	s.key_table.remove(i);
+	s.data_table.remove(i);
 	return true;
 }
 
@@ -56,7 +53,8 @@ QDataStream & operator>>(QDataStream & in, PARAM::SFO & s) {
 		QByteArray key;
 		do {
 			in >> byte;
-			key.append(byte);
+			if (byte)
+				key.append(byte);
 		} while (byte);
 		s.key_table << key;
 	}
@@ -79,7 +77,7 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 	s.header.data_table_start = s.header.key_table_start;
 	s.header.tables_entries = s.index_table.count();
 	for (auto key : s.key_table)
-		s.header.data_table_start += key.length();
+		s.header.data_table_start += key.length() + 1;
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
@@ -87,7 +85,7 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
 	for (int i = 0; i < s.header.tables_entries; ++i)
-		out.writeRawData(s.key_table[i].data(), s.key_table[i].length());
+		out.writeRawData(s.key_table[i].append('\0').toUpper().data(), s.key_table[i].length());
 	out.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
