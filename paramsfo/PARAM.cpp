@@ -10,9 +10,11 @@ PARAM::PARAM(QString path) {
 
 
 PARAM::~PARAM() {
-	f.resize(0);
-	QDataStream out(&f);
-	out << s;
+	if (commit) {
+		f.resize(0);
+		QDataStream out(&f);
+		out << s;
+	}
 	f.close();
 }
 
@@ -38,6 +40,7 @@ bool PARAM::insert(const QByteArray &key, const QByteArray &data, quint32 data_m
 		s.index_table[i].data_len = data.length();
 		s.data_table[i] = data;
 	}
+	commit = true;
 	return true;
 }
 
@@ -50,6 +53,7 @@ bool PARAM::remove(const QByteArray &key) {
 	s.index_table.remove(i);
 	s.key_table.remove(i);
 	s.data_table.remove(i);
+	commit = true;
 	return true;
 }
 
@@ -59,6 +63,11 @@ QByteArray PARAM::at(const QByteArray &key) {
 	if (i < 0)
 		return QByteArray();
 	return s.data_table[i];
+}
+
+
+int PARAM::length() {
+	return s.header.tables_entries;
 }
 
 

@@ -15,6 +15,7 @@ public:
 	bool insert(const QByteArray & key, const QByteArray & data, quint32 data_max_len);
 	bool remove(const QByteArray & key);
 	QByteArray at(const QByteArray & key);
+	int length();
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
 		friend QDataStream &operator<<(QDataStream &out, SFO &s);
@@ -39,5 +40,6 @@ public:
 private:
 	SFO s;
 	QFile f;
+	bool commit;
 };
 
