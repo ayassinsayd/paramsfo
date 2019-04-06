@@ -17,7 +17,8 @@ PARAM::~PARAM() {
 }
 
 
-bool PARAM::isValidParam(QDataStream & in) {
+bool PARAM::isparam() {
+	QDataStream in(&f);
 	in.device()->reset();
 	in.setByteOrder(QDataStream::BigEndian);
 	quint32 signature, version;
@@ -60,7 +61,7 @@ bool PARAM::remove(const QByteArray &key) {
 }
 
 
-QByteArray PARAM::data(const QByteArray &key) {
+QByteArray PARAM::at(const QByteArray &key) {
 	int i = s.key_table.indexOf(key.toUpper());
 	if (i < 0)
 		return QByteArray();
@@ -101,6 +102,8 @@ QDataStream & operator>>(QDataStream & in, PARAM::SFO & s) {
 QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 	out.device()->reset();
 	out.setByteOrder(QDataStream::BigEndian);
+	s.header.magic = 0x00505346;
+	s.header.version = 0x01010000;
 	out << s.header.magic << s.header.version;
 	out.setByteOrder(QDataStream::LittleEndian);
 	s.header.key_table_start = 0x14 + s.index_table.count() * 0x10;
