@@ -103,9 +103,8 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
+	s.index_table[0].key_offset = s.index_table[0].data_offset = 0;
 	for (int i = 0; i < s.header.tables_entries; ++i) {
-		if (i == 0)
-			s.index_table[i].key_offset = s.index_table[i].data_offset = 0;
 		s.index_table[i + 1].key_offset = s.index_table[i].key_offset + s.key_table[i].length() + 1;
 		s.index_table[i + 1].data_offset = s.index_table[i].data_offset + s.index_table[i].data_max_len;
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
