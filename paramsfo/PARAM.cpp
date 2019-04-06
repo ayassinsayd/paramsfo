@@ -71,7 +71,7 @@ int PARAM::length() {
 }
 
 
-QDataStream & operator>>(QDataStream & in, PARAM::SFO & s) {
+QDataStream &operator>>(QDataStream &in, PARAM::SFO &s) {
 	in.device()->reset();
 	in.setByteOrder(QDataStream::BigEndian);
 	in >> s.header.magic >> s.header.version;
@@ -101,7 +101,7 @@ QDataStream & operator>>(QDataStream & in, PARAM::SFO & s) {
 }
 
 
-QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
+QDataStream &operator<<(QDataStream &out, PARAM::SFO  &s) {
 	out.device()->reset();
 	out.setByteOrder(QDataStream::BigEndian);
 	s.header.magic = 0x00505346;

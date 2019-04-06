@@ -9,12 +9,12 @@
 class PARAM
 {
 public:
-	PARAM(const QString & path);
+	PARAM(const QString &path);
 	~PARAM();
 	bool isparam();
-	bool insert(const QByteArray & key, const QByteArray & data, quint32 data_max_len);
-	bool remove(const QByteArray & key);
-	QByteArray at(const QByteArray & key);
+	bool insert(const QByteArray &key, const QByteArray &data, quint32 data_max_len);
+	bool remove(const QByteArray &key);
+	QByteArray at(const QByteArray &key);
 	int length();
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
