@@ -60,6 +60,14 @@ bool PARAM::remove(const QByteArray &key) {
 }
 
 
+QByteArray PARAM::data(const QByteArray &key) {
+	int i = s.key_table.indexOf(key.toUpper());
+	if (i < 0)
+		return QByteArray();
+	return s.data_table[i];
+}
+
+
 QDataStream & operator>>(QDataStream & in, PARAM::SFO & s) {
 	in.device()->reset();
 	in.setByteOrder(QDataStream::BigEndian);

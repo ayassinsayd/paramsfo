@@ -14,6 +14,7 @@ public:
 	bool isValidParam(QDataStream & in);
 	bool insert(const QByteArray & key, const QByteArray & data, quint32 data_max_len);
 	bool remove(const QByteArray & key);
+	QByteArray data(const QByteArray & key);
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
 		friend QDataStream &operator<<(QDataStream &out, SFO &s);
