@@ -107,7 +107,7 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 		if (i == 0)
 			s.index_table[i].key_offset = s.index_table[i].data_offset = 0;
 		s.index_table[i + 1].key_offset = s.index_table[i].key_offset + s.key_table[i].length() + 1;
-		s.index_table[i + 1].data_offset = s.index_table[i].data_offset + s.data_table[i].length() + 1;
+		s.index_table[i + 1].data_offset = s.index_table[i].data_offset + s.index_table[i].data_max_len;
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 			<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
 	}
@@ -115,7 +115,7 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 		out.writeRawData(s.key_table[i].append('\0').toUpper().data(), s.key_table[i].length());
 	out.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i)
-		out.writeRawData(s.data_table[i].append('\0').data(), s.index_table[i].data_max_len + 1);
+		out.writeRawData(s.data_table[i].data(), s.index_table[i].data_max_len);
 	return out;
 }
 
