@@ -49,13 +49,13 @@ bool PARAM::insert(const QByteArray &key, const QByteArray &data, quint32 data_m
 
 
 bool PARAM::remove(const QByteArray &key) {
-	//int i = s.key_table.indexOf(key.toUpper());
-	//if (i < 0)
-	//	return false;
-	//s.header.tables_entries -= 1;
-	//s.index_table.remove(i);
-	//s.key_table.remove(i);
-	//s.data_table.remove(i);
+	int i = s.key_table.indexOf(key.toUpper());
+	if (i < 0)
+		return false;
+	s.header.tables_entries -= 1;
+	s.index_table.remove(i);
+	s.key_table.remove(i);
+	s.data_table.remove(i);
 	return true;
 }
 
