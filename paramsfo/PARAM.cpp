@@ -31,11 +31,11 @@ bool PARAM::insert(const QByteArray &key, const QByteArray &data, quint32 data_m
 	if (i < 0) {
 		s.header.tables_entries += 1;
 		SFO::index index;
-		index.key_offset = 0;
+		//index.key_offset = 0;
 		index.data_fmt = 0x0402;
 		index.data_len = data.length();
 		index.data_max_len = data_max_len;
-		index.data_offset = 0;
+		//index.data_offset = 0;
 		s.index_table << index;
 		s.key_table << key;
 		s.data_table << data;
