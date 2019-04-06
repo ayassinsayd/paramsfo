@@ -1,7 +1,7 @@
 #include "PARAM.h"
 
 
-PARAM::PARAM(QString path) {
+PARAM::PARAM(const QString &path) {
 	f.setFileName(path);
 	f.open(QIODevice::ReadWrite);
 	QDataStream in(&f);

@@ -9,7 +9,7 @@
 class PARAM
 {
 public:
-	PARAM(QString path);
+	PARAM(const QString & path);
 	~PARAM();
 	bool isparam();
 	bool insert(const QByteArray & key, const QByteArray & data, quint32 data_max_len);
