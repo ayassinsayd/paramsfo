@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	PARAM("c:\\x.sfo").remove("app_ver");
+	PARAM("c:\\x.sfo");
 	qDebug() << "finish";
 	getchar();
 	//return a.exec();
