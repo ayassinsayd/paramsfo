@@ -49,13 +49,13 @@ bool PARAM::insert(const QByteArray &key, const QByteArray &data, quint32 data_m
 
 
 bool PARAM::remove(const QByteArray &key) {
-	int i = s.key_table.indexOf(key.toUpper());
-	if (i < 0)
-		return false;
-	s.header.tables_entries -= 1;
-	s.index_table.remove(i);
-	s.key_table.remove(i);
-	s.data_table.remove(i);
+	//int i = s.key_table.indexOf(key.toUpper());
+	//if (i < 0)
+	//	return false;
+	//s.header.tables_entries -= 1;
+	//s.index_table.remove(i);
+	//s.key_table.remove(i);
+	//s.data_table.remove(i);
 	return true;
 }
 
@@ -103,21 +103,22 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-	quint16 key_offset = 0;
-	quint32 data_offset = 0;
 	for (int i = 0; i < s.header.tables_entries; ++i) {
-		s.index_table[i].key_offset = key_offset;
-		s.index_table[i].data_offset = data_offset;
+		if (i = 0)
+			s.index_table[i].key_offset = s.index_table[i].data_offset = 0;
+		s.index_table[i].data_len = s.data_table[i].length();
+		if ((i + 1) < s.header.tables_entries) {
+			s.index_table[i + 1].key_offset = s.index_table[i].key_offset + s.key_table[i].length() + 1;
+			s.index_table[i + 1].data_offset = s.index_table[i].data_offset + s.data_table[i].length();
+		}
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
 			<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
-		key_offset += s.key_table[i].length() + 1;
-		data_offset += s.data_table[i].length();
 	}
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out.writeRawData(s.key_table[i].append('\0').toUpper().data(), s.key_table[i].length());
 	out.device()->seek(s.header.data_table_start);
 	for (int i = 0; i < s.header.tables_entries; ++i)
-		out.writeRawData(s.data_table[i].data(), s.data_table[i].length());
+		out.writeRawData(s.data_table[i].data(), s.index_table[i].data_max_len);
 	return out;
 }
 
