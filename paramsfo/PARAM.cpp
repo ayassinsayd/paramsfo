@@ -132,44 +132,44 @@ QDataStream &operator<<(QDataStream &out, PARAM::SFO  &s) {
 }
 
 
-//ACCOUNT_ID 			utf8 - S
-//ACCOUNTID 			utf8
-//ANALOG_MODE			int32
-//APP_VER 				utf8
-//ATTRIBUTE 			int32
-//BOOTABLE 				int32
-//CATEGORY 				utf8
-//CONTENT_ID			utf8
-//DETAIL 				utf8
-//GAMEDATA_ID			utf8
-//ITEM_PRIORITY			int32
-//LANG 					int32
-//LICENSE 				utf8
-//NP_COMMUNICATION_ID 	utf8
-//NPCOMMID 				utf8
-//PADDING 				utf8 - S
-//PARAMS 				utf8 - S
-//PARAMS2 				utf8 - S
-//PATCH_FILE 			utf8
-//PS3_SYSTEM_VER 		utf8
-//REGION_DENY 			int32
-//RESOLUTION 			int32
-//SAVEDATA_DETAIL 		utf8
-//SAVEDATA_DIRECTORY 	utf8
-//SAVEDATA_FILE_LIST 	utf8 - S
-//SAVEDATA_LIST_PARAM 	utf8
-//SAVEDATA_PARAMS 		utf8 - S
-//SAVEDATA_TITLE 		utf8
-//SOUND_FORMAT		 	int32
-//SOURCE				int32
-//SUB_TITLE				utf8
-//TARGET_APP_VER		utf8
-//TITLE 				utf8
-//TITLE_ID				utf8
-//PARENTAL_LEVEL 		int32
-//PARENTALLEVEL 		int32
-//VERSION 				utf8
-//XMB_APPS 				int32
-//PARENTAL_LEVEL_x 		int32
-//TITLE_xx 				utf8
-//TITLEID0xx			utf8
+//ACCOUNT_ID					utf8 - S 					16 		(0x010)
+//ACCOUNTID 					utf8 						16 		(0x010)
+//ANALOG_MODE 					int32	 					4 		(0x004)
+//APP_VER 						utf8 						8		(0x008)
+//ATTRIBUTE 					int32 						4 		(0x004)
+//BOOTABLE 						int32 						4 		(0x004)
+//CATEGORY 						utf8 						4 		(0x004)
+//CONTENT_ID 					utf8 						48		(0x030)
+//DETAIL 						utf8 		 				1024 	(0x400)
+//GAMEDATA_ID 					utf8 		 				32 		(0x020)
+//ITEM_PRIORITY 				int32	 					4 		(0x004)
+//LANG 							int32 						4 		(0x004)
+//LICENSE 						utf8 					 	512 	(0x200)
+//NP_COMMUNICATION_ID 			utf8 						16 		(0x010)
+//NPCOMMID 						utf8 						16 		(0x010)
+//PADDING 						utf8 - S 					8 		(0x008)
+//PARAMS 						utf8 - S 					1024 	(0x400)
+//PARAMS2 						utf8 - S 					12 		(0x00C)
+//PARENTAL_LEVEL_x 				int32 						4 		(0x004)
+//PARENTAL_LEVEL 				int32 						4		(0x004)
+//PARENTALLEVEL 				int32 						4 		(0x004)
+//PATCH_FILE 					utf8 	 					32 		(0x020)
+//PS3_SYSTEM_VER 				utf8 						8 		(0x008)
+//REGION_DENY 					int32 						4 		(0x004)
+//RESOLUTION 					int32 						4 		(0x004)
+//SAVEDATA_DETAIL 				utf8 					 	1024 	(0x400)
+//SAVEDATA_DIRECTORY 			utf8 					 	64 		(0x040)
+//SAVEDATA_FILE_LIST			utf8 - S 					3168 	(0xC60)
+//SAVEDATA_LIST_PARAM 			utf8 						8 		(0x008)
+//SAVEDATA_PARAMS 				utf8 - S					128 	(0x080)
+//SAVEDATA_TITLE 				utf8 				 		128 	(0x080)
+//SOUND_FORMAT 					int32 						4 		(0x004)
+//SOURCE						int32 						4 		(0x004)
+//SUB_TITLE 					utf8 			 			128 	(0x080)
+//TARGET_APP_VER 				utf8					 	8		(0x008)
+//TITLE 						utf8 		 				128 	(0x080)
+//TITLE_ID 						utf8 						16		(0x010)
+//TITLE_xx 						utf8 			 			128 	(0x080)
+//TITLEID0xx 					utf8 						16		(0x010)
+//VERSION 						utf8 						8 		(0x008)
+//XMB_APPS 						int32 						4 		(0x004)
