@@ -103,9 +103,16 @@ QDataStream & operator<<(QDataStream & out, PARAM::SFO  & s) {
 	if (s.header.data_table_start % 4 != 0)
 		s.header.data_table_start = (s.header.data_table_start / 4 + 1) * 4;
 	out << s.header.key_table_start << s.header.data_table_start << s.header.tables_entries;
-	for (int i = 0; i < s.header.tables_entries; ++i)
+	quint16 key_offset = 0;
+	quint32 data_offset = 0;
+	for (int i = 0; i < s.header.tables_entries; ++i) {
+		s.index_table[i].key_offset = key_offset;
+		s.index_table[i].data_offset = data_offset;
 		out << s.index_table[i].key_offset << s.index_table[i].data_fmt << s.index_table[i].data_len
-		<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
+			<< s.index_table[i].data_max_len << s.index_table[i].data_offset;
+		key_offset += s.key_table[i].length() + 1;
+		data_offset += s.data_table[i].length();
+	}
 	for (int i = 0; i < s.header.tables_entries; ++i)
 		out.writeRawData(s.key_table[i].append('\0').toUpper().data(), s.key_table[i].length());
 	out.device()->seek(s.header.data_table_start);
