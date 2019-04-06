@@ -18,12 +18,7 @@ PARAM::~PARAM() {
 
 
 bool PARAM::isparam() {
-	QDataStream in(&f);
-	in.device()->reset();
-	in.setByteOrder(QDataStream::BigEndian);
-	quint32 signature, version;
-	in >> signature >> version;
-	return ((signature == 0x00505346) && (version == 0x01010000));
+	return ((s.header.magic == 0x00505346) && (s.header.version == 0x01010000));
 }
 
 
