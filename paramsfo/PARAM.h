@@ -3,6 +3,7 @@
 #include <QtCore/qbytearray.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qdatastream.h>
+#include <QtCore/qstringlist.h>
 #include <QtCore/qdebug.h>
 
 
@@ -16,6 +17,92 @@ public:
 	bool remove(const QByteArray &key);
 	QByteArray at(const QByteArray &key);
 	int length();
+	enum key {
+		ACCOUNT_ID,
+		ACCOUNTID,
+		ANALOG_MODE,
+		APP_VER,
+		ATTRIBUTE,
+		BOOTABLE,
+		CATEGORY,
+		CONTENT_ID,
+		DETAIL,
+		GAMEDATA_ID,
+		ITEM_PRIORITY,
+		LANG,
+		LICENSE,
+		NP_COMMUNICATION_ID,
+		NPCOMMID,
+		PADDING,
+		PARAMS,
+		PARAMS2,
+		PARENTAL_LEVEL_x,
+		PARENTAL_LEVEL,
+		PARENTALLEVEL,
+		PATCH_FILE,
+		PS3_SYSTEM_VER,
+		REGION_DENY,
+		RESOLUTION,
+		SAVEDATA_DETAIL,
+		SAVEDATA_DIRECTORY,
+		SAVEDATA_FILE_LIST,
+		SAVEDATA_LIST_PARAM,
+		SAVEDATA_PARAMS,
+		SAVEDATA_TITLE,
+		SOUND_FORMAT,
+		SOURCE,
+		SUB_TITLE,
+		TARGET_APP_VER,
+		TITLE,
+		TITLE_ID,
+		TITLE_xx,
+		TITLEID0xx,
+		VERSION,
+		XMB_APPS
+	};
+	QString keymap[41] = {
+		"ACCOUNT_ID",
+		"ACCOUNTID",
+		"ANALOG_MODE",
+		"APP_VER",
+		"ATTRIBUTE",
+		"BOOTABLE",
+		"CATEGORY",
+		"CONTENT_ID",
+		"DETAIL",
+		"GAMEDATA_ID",
+		"ITEM_PRIORITY",
+		"LANG",
+		"LICENSE",
+		"NP_COMMUNICATION_ID",
+		"NPCOMMID",
+		"PADDING",
+		"PARAMS",
+		"PARAMS2",
+		"PARENTAL_LEVEL_x",
+		"PARENTAL_LEVEL",
+		"PARENTALLEVEL",
+		"PATCH_FILE",
+		"PS3_SYSTEM_VER",
+		"REGION_DENY",
+		"RESOLUTION",
+		"SAVEDATA_DETAIL",
+		"SAVEDATA_DIRECTORY",
+		"SAVEDATA_FILE_LIST",
+		"SAVEDATA_LIST_PARAM",
+		"SAVEDATA_PARAMS",
+		"SAVEDATA_TITLE",
+		"SOUND_FORMAT",
+		"SOURCE",
+		"SUB_TITLE",
+		"TARGET_APP_VER",
+		"TITLE",
+		"TITLE_ID",
+		"TITLE_xx",
+		"TITLEID0xx",
+		"VERSION",
+		"XMB_APPS"
+	};
 	struct SFO {
 		friend QDataStream &operator>>(QDataStream &in, SFO &s);
 		friend QDataStream &operator<<(QDataStream &out, SFO &s);
@@ -40,6 +127,5 @@ public:
 private:
 	SFO s;
 	QFile f;
-	bool commit;
 };
 
